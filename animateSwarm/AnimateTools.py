@@ -161,7 +161,7 @@ class headAndTail:
                 data containing for "Time" time points the position for "N"
                 agents.
             size float
-                marker size of the plot
+                radius of marker size
             colors.shape(N)
                 array or list containing for each particle a colorcode (float) 
             ax matplotlib.axes.AxesSubplot object
@@ -180,7 +180,8 @@ class headAndTail:
         self.tail_length = tail_length
         self.scatter = scatter
         self.delay = delay
-        self.size = size
+        self.ax = ax
+        self.sizeRaw = size
         if marker is None:
             marker = 'o'
         if self.scatter is None:
@@ -190,12 +191,22 @@ class headAndTail:
         else:
             self.createFunc = partial(ax.plot, marker=marker, c=colors, linestyle='none')
 
+
+    def sizeAdjust(self):
+        trans = self.ax.transData
+        pixels = trans.transform([(0, 1), (1, 0)]) - trans.transform((0, 0))
+        xpix = pixels[1].max()
+        self.size = self.sizeRaw * xpix / 77. * 100
+        if self.scatter:
+            self.size = self.size ** 2
+
+
     def create(self):
         posInit = self.pos[0]   # use Time=1 for initialization
         if self.scatter:
-            self.heads = self.createFunc(posInit.T[0], posInit.T[1], s=self.size**2)
+            self.heads = self.createFunc(posInit.T[0], posInit.T[1], s=self.size)
             self.tails = self.createFunc(posInit.T[0], posInit.T[1],
-                                         s=(self.size/2)**2, alpha=0.5)
+                                         s=self.size/4, alpha=0.5)
         else:
             self.heads = self.createFunc(posInit.T[0], posInit.T[1], ms=self.size)[0]
             self.tails = self.createFunc(posInit.T[0], posInit.T[1],
@@ -203,6 +214,7 @@ class headAndTail:
 
 
     def update(self, s):
+        self.sizeAdjust()
         s = s - self.delay
         if s == 0:
             self.create()
@@ -211,12 +223,17 @@ class headAndTail:
             if endtail < 0:
                 endtail = 0
             if self.scatter:
+                tail = self.pos[endtail:s].reshape(-1, 2)
                 self.heads.set_offsets(self.pos[s])
-                self.tails.set_offsets(self.pos[endtail:s].reshape(-1, 2))
+                self.tails.set_offsets(tail)
+                self.heads.set_sizes(len(self.pos[s]) * [self.size])
+                self.tails.set_sizes(len(tail) * [self.size / 4])
             else:
                 self.heads.set_data(self.pos[s].T[0], self.pos[s].T[1])
                 self.tails.set_data(self.pos[endtail:s].T[0],
                                     self.pos[endtail:s].T[1])
+                self.heads.set_markersize(self.size)
+                self.tails.set_markersize(self.size / 2)
         if s >= 0:
             return self.heads, self.tails
 
