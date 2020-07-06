@@ -243,7 +243,7 @@ class Limits4Pos:
     adjust the limits of the axis to the positions of the agents
     -> always see all agents and not more
     '''
-    def __init__(self, positions, ax):
+    def __init__(self, positions, ax, delay=None):
         '''
         Assumes that the start-positions can be different
         but all end synchrounously 
@@ -252,6 +252,9 @@ class Limits4Pos:
                 list of arrays containing positions, i.e.
                     posA.shape = [Time, Nagents, 2] OR [Time, 2]
         '''
+        if delay is None:
+            delay = 0
+        self.delay = delay
         self.ax = ax
         times = [len(pos) for pos in positions]
         limits = np.zeros((max(times), 4)) * np.nan
@@ -272,8 +275,10 @@ class Limits4Pos:
         self.yMax = limits[:, 3] + extra
 
     def update(self, s):
-        self.ax.set_xlim(self.xMin[s], self.xMax[s])
-        self.ax.set_ylim(self.yMin[s], self.yMax[s])
+        s = s - self.delay
+        if s >= 0:
+            self.ax.set_xlim(self.xMin[s], self.xMax[s])
+            self.ax.set_ylim(self.yMin[s], self.yMax[s])
         return self.ax
 
 
@@ -398,7 +403,7 @@ def UpdateViaAnimation(fig, tasks, tmin, tmax, fps=None, dpi=None,
     name = gen.setDefault(name, 'Animation')
     interval = 1000*(1/fps)
     anim = animation.FuncAnimation(fig, tasks.update, interval=interval,
-                                   frames=range(tmin-1, tmax))
+                                   frames=range(tmin-1, tmax), repeat=True)
     if mode == 'movie':
         anim.save(name + '.mp4', writer='ffmpeg', dpi=dpi)
     elif mode == 'gif':
