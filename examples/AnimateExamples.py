@@ -6,7 +6,6 @@ from matplotlib import animation
 import h5py
 from animateSwarm import AnimateTools as at
 from pathlib import Path
-import pickle
 from functools import partial
 
 
