@@ -6,16 +6,17 @@ import matplotlib
 if __name__ == '__main__':
     matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 from matplotlib.collections import LineCollection
-from matplotlib.colors import ListedColormap, BoundaryNorm
 from matplotlib import animation
 from functools import partial
-import sys
 import os
-home = '/home/klamser'
-sys.path.append(os.path.join(home, 'Gitrepos/TSana'))
-from TsTools import general as gen 
+
+
+def setDefault(x, val):
+    if x is None:
+        x = val
+    return x
+
 
 def voronoi_Lines(vor):
     """
@@ -423,10 +424,10 @@ class taskCollector:
 
 def UpdateViaDraw(fig, tasks, tmin, tmax, fps=None, dpi=None,
                   mode=None, name=None):
-    fps = gen.setDefault(fps, 15)
-    dpi = gen.setDefault(dpi, 300)
-    mode = gen.setDefault(mode, 'normal')
-    name = gen.setDefault(name, 'Animation')
+    fps = setDefault(fps, 15)
+    dpi = setDefault(dpi, 300)
+    mode = setDefault(mode, 'normal')
+    name = setDefault(name, 'Animation')
     maxFps = 20 # this is system specific
     interval = 1/fps - 1/maxFps
     for s in range(tmin, tmax):
@@ -448,14 +449,15 @@ def UpdateViaDraw(fig, tasks, tmin, tmax, fps=None, dpi=None,
 
 
 def UpdateViaAnimation(fig, tasks, tmin, tmax, fps=None, dpi=None,
-                       mode=None, name=None):
-    fps = gen.setDefault(fps, 15)
-    dpi = gen.setDefault(dpi, 300)
-    mode = gen.setDefault(mode, 'normal')
-    name = gen.setDefault(name, 'Animation')
+                       mode=None, name=None, repeat=None):
+    fps = setDefault(fps, 15)
+    dpi = setDefault(dpi, 300)
+    mode = setDefault(mode, 'normal')
+    name = setDefault(name, 'Animation')
+    name = setDefault(repeat, True)
     interval = 1000*(1/fps)
     anim = animation.FuncAnimation(fig, tasks.update, interval=interval,
-                                   frames=range(tmin-1, tmax), repeat=True)
+                                   frames=range(tmin-1, tmax), repeat=repeat)
     if mode == 'movie':
         anim.save(name + '.mp4', writer='ffmpeg', dpi=dpi)
     elif mode == 'gif':
