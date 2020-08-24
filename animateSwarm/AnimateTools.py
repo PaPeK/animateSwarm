@@ -8,6 +8,7 @@ if __name__ == '__main__':
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.collections import LineCollection
+from matplotlib.colors import ListedColormap, BoundaryNorm
 from matplotlib import animation
 from functools import partial
 import sys
@@ -57,7 +58,7 @@ def voronoi_Lines(vor):
     return finite_segments, infinite_segments
 
 class voro_lines:
-    def __init__(self, preys, axs, preds, t0pred):
+    def __init__(self, preys, axs, preds=None, t0pred=None):
         '''
         INPUT:
             preys datCollector object
@@ -332,6 +333,38 @@ class ForceLines:
         self.forceLines.set_data(line[0], line[1])
         return self.forceLines
 
+class lineCOM:
+    def __init__(self, pos, color, ax):
+        self.com = np.nanmean(pos, axis=1)
+        self.lineCOM = ax.plot(self.com[0 ,0], self.com[0, 1], c=color)[0]
+
+    def update(self, s):
+        self.lineCOM.set_data(self.com[:s ,0], self.com[:s, 1])
+        return self.lineCOM
+
+class lineFadingCOM:
+    def __init__(self, pos, ax, lineLength, alpha=None):
+        if alpha is None:
+            alpha = 0.7
+        self.N = lineLength
+        self.com = np.nanmean(pos, axis=1)
+        points = np.array(self.N*[self.com[0]]).reshape(-1, 1, 2)
+        segments = np.concatenate([points[:-1], points[1:]], axis=1)
+        norm = plt.Normalize(0, self.N-1)
+        lc = LineCollection(segments, cmap='Reds', norm=norm, alpha=alpha)
+        lc.set_array(np.arange(self.N))
+        self.lc = ax.add_collection(lc)
+
+    def update(self, s):
+        if s >= self.N:
+            points = self.com[s-self.N+1:s+1].reshape(-1, 1, 2)
+        else:
+            points = np.vstack(( (self.N-s) * [self.com[0]], 
+                                 self.com[:s+1])).reshape(-1, 1, 2)
+        segments = np.concatenate([points[:-1], points[1:]], axis=1)
+        self.lc.set_segments(segments)
+        return self.lc
+
 
 class circleCOM:
     def __init__(self, pos, radius, color, ax):
@@ -343,6 +376,25 @@ class circleCOM:
     def update(self, s):
         self.circCom.set_center((self.com[s ,0], self.com[s, 1]))
         return self.circCom
+
+
+class circlesCOM:
+    def __init__(self, pos, radius, color, ax, Ncircs):
+        self.com = np.nanmean(pos, axis=1)
+        self.circCom = []
+        radiis = np.linspace(radius, radius/2, Ncircs)
+        for rad in radiis:
+            circle = plt.Circle((self.com[0 ,0], self.com[0, 1]), rad,
+                                color=color, fill=False)
+            self.circCom.append(ax.add_artist(circle))
+
+
+    def update(self, s):
+        for i, circ in enumerate(self.circCom):
+            z = s-i
+            if z > 0:
+                circ.set_center((self.com[z ,0], self.com[z, 1]))
+        return tuple(self.circCom)
 
 
 class taskCollector:
