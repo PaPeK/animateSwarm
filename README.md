@@ -11,7 +11,7 @@ The package depends on a number of basic python packages. Either you can install
 
 ### Required python packages
 
-The code runs in the anaconda environment specified in `environment.yml` (generated from a working environment.... might not be minimal-version) which can be created from the projects root directory via
+The code runs in the anaconda environment specified in `environment.yml` which can be created from the projects root directory via
 ```shell
 conda env create -f environment.yml
 ```
