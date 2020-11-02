@@ -397,7 +397,8 @@ class circleCOM:
         self.circCom = ax.add_artist(circle)
 
     def update(self, s):
-        self.circCom.set_center((self.com[s ,0], self.com[s, 1]))
+        self.circCom.center = self.com[s ,0], self.com[s, 1]
+        # self.circCom.set_center((self.com[s ,0], self.com[s, 1]))
         return self.circCom
 
 
@@ -416,7 +417,8 @@ class circlesCOM:
         for i, circ in enumerate(self.circCom):
             z = s-i
             if z > 0:
-                circ.set_center((self.com[z ,0], self.com[z, 1]))
+                circ.center = self.com[z ,0], self.com[z, 1]
+                # circ.set_center((self.com[z ,0], self.com[z, 1]))
         return tuple(self.circCom)
 
 
@@ -476,7 +478,7 @@ def UpdateViaAnimation(fig, tasks, tmin, tmax, fps=None, dpi=None,
     dpi = setDefault(dpi, 300)
     mode = setDefault(mode, 'normal')
     name = setDefault(name, 'Animation')
-    name = setDefault(repeat, True)
+    repeat = setDefault(repeat, True)
     interval = 1000*(1/fps)
     anim = animation.FuncAnimation(fig, tasks.update, interval=interval,
                                    frames=range(tmin-1, tmax), repeat=repeat)
