@@ -33,7 +33,7 @@ if __name__ == '__main__':
     name = 'Animation'
     cmap = plt.get_cmap('coolwarm') # alternatives 'bwr', 'Reds'
     folder = Path.cwd().parent
-    animateFunc = at.UpdateViaDraw # at.UpdateViaAnimation OR at.UpdateViaDraw
+    animateFunc = at.UpdateViaAnimation # at.UpdateViaAnimation OR at.UpdateViaDraw
     partUpdate = partial(animateFunc, fps=fps, dpi=dpi,
                          mode=mode, name=name, repeat=False)
 

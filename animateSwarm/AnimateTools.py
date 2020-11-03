@@ -143,6 +143,8 @@ class velocityArrows:
         if s == 0:
             self.create()
         elif s > 0:
+            if not hasattr(self, 'Q'):
+                self.create()
             self.Q.set_offsets(self.pos[s])
             self.Q.set_UVC(self.vel[s].T[0], self.vel[s].T[1])
         if s >= 0:
@@ -243,6 +245,8 @@ class headAndTail:
         if s == 0:
             self.create()
         elif s > 0:
+            if not hasattr(self, 'heads'):
+                self.create()
             endtail = s - self.tail_length
             if endtail < 0:
                 endtail = 0
