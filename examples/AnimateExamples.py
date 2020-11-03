@@ -33,9 +33,10 @@ if __name__ == '__main__':
     name = 'Animation'
     cmap = plt.get_cmap('coolwarm') # alternatives 'bwr', 'Reds'
     folder = Path.cwd().parent
-    partUpdate = partial(at.UpdateViaAnimation, fps=fps, dpi=dpi,
+    animateFunc = at.UpdateViaDraw # at.UpdateViaAnimation OR at.UpdateViaDraw
+    partUpdate = partial(animateFunc, fps=fps, dpi=dpi,
                          mode=mode, name=name, repeat=False)
-    
+
     # # Load data 
     with h5py.File(str(folder / 'data' / 'out_xx.h5')) as fh5:
         preys = at.datCollector( np.array(fh5['/part']) )
@@ -52,8 +53,7 @@ if __name__ == '__main__':
     time, N, _ = preys.pos.shape 
     timePred, Npred, _ = preds.pos.shape
     t0pred = time - timePred # predator can appear later
-    
-    
+
     # # Animation 
     # ## Minimal Example 
     f, ax = plt.subplots(1)
@@ -89,16 +89,15 @@ if __name__ == '__main__':
     tasks.append( at.circleCOM(preys.pos, 1, 'b', ax) )
     # animation
     partUpdate(f, tasks, 0, time)
-    
-    
+
     # ## Advanced Example 
     # create figure:
-    rows = 1 
+    rows = 1
     cols = 3
     f, axs = plt.subplots(rows, cols,
                           figsize=0.7*min(rows, cols)*plt.figaspect(rows/cols))
     f.tight_layout(rect=[0, 0, 1, 0.95]) # rect=[left, bottom, right, top]
-    
+
     # partial definition to not repeat arguments (missing: ax, tail-length)
     preyHeads = partial(at.headAndTail, preys, sizePrey, colors, cmap=cmap)
     predHeads = partial(at.headAndTail, preds, sizePred, 'r', scatter=False,

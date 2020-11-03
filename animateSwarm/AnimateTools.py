@@ -442,16 +442,20 @@ class taskCollector:
             if type(artist) != tuple:
                 artist = tuple([artist])
             # print(type(artistObjs), type(artist), task.__class__)
-            artistObjs += artist 
+            artistObjs += artist
         return artistObjs
 
 
 def UpdateViaDraw(fig, tasks, tmin, tmax, fps=None, dpi=None,
-                  mode=None, name=None):
+                  mode=None, name=None, repeat=None):
+    '''
+    TODO: repeat is only dummy (ensure same parameters as UpdateViaAnimation)
+    '''
     fps = setDefault(fps, 15)
     dpi = setDefault(dpi, 300)
     mode = setDefault(mode, 'normal')
     name = setDefault(name, 'Animation')
+    plt.show(block=False) # necessary for normal
     maxFps = 20 # this is system specific
     interval = 1/fps - 1/maxFps
     for s in range(tmin, tmax):
