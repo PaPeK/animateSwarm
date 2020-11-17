@@ -65,8 +65,8 @@ if __name__ == '__main__':
     tasks.append( at.Limits4Pos(positions, ax) )
     tasks.append( at.headAndTail(preys, sizePrey, colors, ax,
                                  tail_length, cmap=cmap) )
-    tasks.append( at.headAndTail(preds, sizePred, 'r', ax, tail_length, 
-                                 scatter=False, delay=t0pred) )
+    tasks.append( at.headAndTail(preds, sizePred, 'r', ax, tail_length,
+                                 delay=t0pred) )
     # animation
     partUpdate(f, tasks, 0, time)
 
@@ -80,8 +80,8 @@ if __name__ == '__main__':
     tasks.append( at.Limits4Pos(positions, ax) )
     tasks.append( at.headAndTail(preys, sizePrey, colors, ax,
                                  tail_length, cmap=cmap) )
-    tasks.append( at.headAndTail(preds, sizePred, 'r', ax, tail_length, 
-                                 scatter=False, delay=t0pred) )
+    tasks.append( at.headAndTail(preds, sizePred, 'r', ax, tail_length,
+                                 delay=t0pred) )
     # here are the extensions
     # tasks.append( at.voro_lines(preys, ax) )
     tasks.append( at.voro_lines(preys, ax, preds, t0pred) )
@@ -100,10 +100,10 @@ if __name__ == '__main__':
 
     # partial definition to not repeat arguments (missing: ax, tail-length)
     preyHeads = partial(at.headAndTail, preys, sizePrey, colors, cmap=cmap)
-    predHeads = partial(at.headAndTail, preds, sizePred, 'r', scatter=False,
+    predHeads = partial(at.headAndTail, preds, sizePred, 'r',
                         delay=t0pred)
     preyHeadsD = partial(at.headAndTail, preysD, sizePrey, 'b', delay=t0pred)
-    predHeadsD = partial(at.headAndTail, predsD, sizePred, 'g', scatter=False,
+    predHeadsD = partial(at.headAndTail, predsD, sizePred, 'g',
                          delay=t0pred)
     # Collect update-tasks
     tasks = at.taskCollector()

@@ -188,8 +188,8 @@ class headAndTail:
                 agents.
             size float
                 radius of marker size
-            colors.shape(N)
-                array or list containing for each particle a colorcode (float) 
+            colors.shape(N) or (Time, N)
+                array or list containing for each particle a colorcode (float)
             ax matplotlib.axes.AxesSubplot object
                 Subplot where the data is plotted
             cmap matplotlib.Colormap
@@ -202,6 +202,12 @@ class headAndTail:
         '''
         if delay is None:
             delay = 0
+        if type(colors[0]) == np.ndarray:
+            if cmap is None:
+                cmap = plt.get_cmap('coolwarm')
+            self.colors = colors
+            self.cmap = cmap
+            colors = cmap(colors[0])
         self.pos = data.pos
         self.tail_length = tail_length
         self.scatter = scatter
@@ -213,8 +219,9 @@ class headAndTail:
         if self.scatter is None:
             self.scatter = True
         if self.scatter:
-            self.createFunc = partial(ax.scatter, marker=marker, c=colors, cmap=cmap)
+            self.createFunc = partial(ax.scatter, marker=marker, c=colors)# , cmap=cmap)
         else:
+            print('ATTENTION: scatter=False does not support change of colors')
             self.createFunc = partial(ax.plot, marker=marker, c=colors, linestyle='none')
 
 
@@ -256,6 +263,9 @@ class headAndTail:
                 self.tails.set_offsets(tail)
                 self.heads.set_sizes(len(self.pos[s]) * [self.size])
                 self.tails.set_sizes(len(tail) * [self.size / 4])
+                if hasattr(self, 'colors'):
+                    self.heads.set_color(self.cmap(self.colors[s]))
+                    self.tails.set_color(self.cmap(self.colors[s]))
             else:
                 self.heads.set_data(self.pos[s].T[0], self.pos[s].T[1])
                 self.tails.set_data(self.pos[endtail:s].T[0],
