@@ -129,3 +129,32 @@ if __name__ == '__main__':
         ax.set_aspect('equal')
     interval = 1000*(1/fps) # interval in ms
     partUpdate(f, tasks, 0, time)
+
+    # ###  Dynamic changing colors\n
+    # * in this example the color means nothing (random)
+
+    # random colors of the prey
+    colors = np.random.standard_normal((time, N))
+    colors -= colors.min()
+    colors /= colors.max()
+    # random colors of the predator
+    pcolors = np.random.standard_normal((time, 1))
+    pcolors -= pcolors.min()
+    pcolors /= pcolors.max()# it is the same as the minimal example
+    f, ax = plt.subplots(1)
+    ax.axis('off')
+    ax.set_aspect('equal')
+    # Collect update-tasks
+    tasks = at.taskCollector()
+    positions = [preys.pos, preds.pos]
+    tasks.append( at.Limits4Pos(positions, ax) )
+    tasks.append( at.headAndTail(preys, sizePrey, colors, ax,
+                                 tail_length, cmap=cmap) )
+    tasks.append( at.headAndTail(preds, sizePred, pcolors,
+                                 ax, tail_length, cmap=cmap,
+                                 delay=t0pred) )
+    # animation
+    interval = 1000*(1/fps) # interval in ms
+    anim = animation.FuncAnimation(f, tasks.update, interval=interval,
+                                   frames=range(0-1, time), repeat=True)
+    plt.show()
