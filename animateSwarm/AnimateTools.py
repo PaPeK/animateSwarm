@@ -169,7 +169,12 @@ class datCollector:
         else:
             dat = dat.T
             self.pos = dat[:2].T
-            self.vel = dat[2:4].T
+            if len(dat) > 2:
+                self.vel = dat[2:4].T
+            else:
+                vel = np.diff(dat[:2].T, axis=0)
+                vel = np.vstack([vel[0][None, :, :], vel])
+                self.vel = vel
             if len(dat) > 4:
                 self.fitness = dat[4].T
                 self.force = dat[5:].T
